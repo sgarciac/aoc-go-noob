@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func ReadLines() ([]int){
+func ReadInts() ([]int){
 	scanner := bufio.NewScanner(os.Stdin)
 	var numbers []int;
 	for scanner.Scan() {

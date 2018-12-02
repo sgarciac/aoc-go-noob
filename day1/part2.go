@@ -6,7 +6,7 @@ import (
 
 func main () {
 	presence := make(map[int]bool);
-	numbers := ReadLines();
+	numbers := ReadInts();
 	current := 0
 	presence[current] = true;
 	current = numbers[0];
@@ -20,5 +20,6 @@ func main () {
 			index = 0;
 		}
 	}
+
 	fmt.Printf("%d\n", current);
 }

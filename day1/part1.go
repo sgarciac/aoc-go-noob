@@ -5,7 +5,7 @@ import (
 )
 
 func main () {
-	numbers := ReadLines();
+	numbers := ReadInts();
 	total := 0
 	for _, value := range numbers {
 		total += value;
