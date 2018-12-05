@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-
 func main(){
 	log := ReadLog();
 	guardsIntervals := calculateIntervals(log);
