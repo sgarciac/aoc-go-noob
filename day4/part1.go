@@ -4,43 +4,37 @@ import (
 	"fmt"
 )
 
+
 func main(){
 	log := ReadLog();
-	times := make(map[int]int);
-	currentGuard := -1;
-	currentMinute := -1
-	currentState := -1
+	guardsIntervals := calculateIntervals(log);
 	maxGuard := -1;
-	maxTime := -1
-	for _, logentry := range log {
-		switch logentry.logtype {
-		case awake:
-			newMinute := logentry.date.Minute()
-			times[currentGuard] += (newMinute - currentMinute)
-			currentMinute = newMinute
-			currentState = awake
-			if times[currentGuard] > maxTime {
-				maxGuard = currentGuard
-				maxTime = times[currentGuard]
-			}
-		case asleep:
-			currentMinute = logentry.date.Minute()
-			currentState = asleep
-		case shift:
-			if (currentGuard != -1){
-				if currentState == asleep {
-					times[currentGuard] += (60 - currentMinute)
-
-				}
-			}
-			currentGuard = logentry.guardId
-			if(logentry.date.Hour() != 0) {
-				currentMinute = 0;
-			} else {
-				currentMinute = logentry.date.Minute()
-			}
+	maxTime := -1;
+	for guard, intervals := range guardsIntervals {
+		total := 0
+		for _, interval := range intervals {
+			total += interval[1] - interval[0]
+		}
+		if total > maxTime {
+			maxTime = total;
+			maxGuard = guard;
 		}
 	}
-
-	fmt.Printf("max guard: %d hours = %d\n",maxGuard, maxTime);
+	fmt.Printf("Most lazy guard: %d (%dm)\n", maxGuard, maxTime);
+	maxMinute := -1
+	maxMinuteHits := -1;
+	for i := 0; i < 59; i++ {
+		hits := 0
+		for _, interval := range guardsIntervals[maxGuard] {
+			if(i >= interval[0] && i < interval[1]){
+				hits++;
+			}
+		}
+		if hits > maxMinuteHits {
+			maxMinuteHits = hits;
+			maxMinute = i
+		}
+	}
+	fmt.Printf("Most lazy minute: %d (%d hits)\n", maxMinute, maxMinuteHits);
+	fmt.Printf("%d x %d = %d\n",maxGuard, maxMinute, maxGuard * maxMinute);
 }
