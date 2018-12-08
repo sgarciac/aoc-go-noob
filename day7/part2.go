@@ -28,6 +28,7 @@ func workersStillBusy() bool {
 }
 
 func main() {
+
 	readInput();
 	makeRootsAvailable();
 
