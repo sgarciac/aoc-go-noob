@@ -45,6 +45,18 @@ func nextGarden(tree *avl.Tree) *avl.Tree {
 }
 
 
+
+func cycleSize(garden *avl.Tree) (int,int) {
+	loops := 0
+	for ng := garden; true; ng = nextGarden(ng){
+		fmt.Printf("%d %d\n",loops,len(ng.Keys()))
+		fmt.Println(ng.Keys())
+		loops++
+	}
+	return -1,-1
+}
+
+
 func runeToPlant(r rune) bool{
 	if r == '.' {
 		return false
@@ -72,7 +84,8 @@ func main(){
 			}
 		}
 	}
-	for i := 0; i < 20; i++ {
+	// finally it was very silly
+	for i := 0; i < 1000; i++ {
 		garden = nextGarden(garden)
 	}
 	total := 0
@@ -80,5 +93,6 @@ func main(){
 		total += val.(int)
 	}
 	fmt.Println(total)
-	//fmt.Println(nextGarden(garden).Keys())
+	fmt.Println(len(garden.Keys()))
+	fmt.Println(((50000000000 - 1000) * 72) + 74022)
 }
