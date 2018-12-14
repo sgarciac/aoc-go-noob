@@ -33,6 +33,7 @@ type cart struct {
 	pos position
 	dir direction
 	r rotation
+	crashed bool
 }
 
 func (this cart) String() string {
@@ -40,7 +41,6 @@ func (this cart) String() string {
 }
 
 var roads [1000][1000]rune
-var carts []cart
 
 func printRoads() {
 	for i := 0; i < 20; i++ {
@@ -56,16 +56,12 @@ func printRoads() {
 	}
 }
 
-func printCarts(){
+func printCarts(carts []cart){
 	for _, cart := range carts {
 		fmt.Println(cart)
 	}
 }
 
-func printState(){
-	printRoads()
-	printCarts()
-}
 
 func createCart(id, x, y int,rune rune) cart {
 	dir := direction{0,0}
@@ -79,16 +75,17 @@ func createCart(id, x, y int,rune rune) cart {
 	case '>':
 		dir = direction{1,0}
 	}
-	return cart{id, position{x, y}, dir, acw}
+	return cart{id, position{x, y}, dir, acw, false}
 }
 
-func sortCarts(){
+func sortCarts(carts []cart){
 	sort.Slice(carts,func(i,j int) bool {
 		return carts[i].pos.y < carts[j].pos.y || (carts[i].pos.y == carts[j].pos.y && carts[i].pos.x < carts[j].pos.x)
 	})
 }
 
-func readRoads(){
+func readRoads() []cart{
+	var carts []cart
 	scanner := bufio.NewScanner(os.Stdin)
 	row := 0
 	cartsCount := 0
@@ -104,6 +101,7 @@ func readRoads(){
 		}
 		row++
 	}
+	return carts
 }
 
 func advanceCart(c cart) cart {
@@ -138,36 +136,61 @@ func advanceCart(c cart) cart {
 		}
 		newr = nextRotation(c.r)
 	}
-	return cart{c.id,position{newx,newy},direction{newdx,newdy},newr}
+	return cart{c.id,position{newx,newy},direction{newdx,newdy},newr,c.crashed}
 }
 
-func countCartsIn(x,y int) int{
-	total := 0
-	for _, cart := range carts {
-		if (cart.pos.x == x && cart.pos.y == y){
-			total++
+func removeCart(id int, carts []cart) []cart {
+	i := 0
+	for i < len(carts) {
+		if carts[i].id == id {
+			break
+		}
+		i++;
+	}
+	if i < len(carts){
+		return append(carts[:i],carts[i+1:]...)
+	} else {
+		return carts
+	}
+}
+
+func indexesOfUncollisionedCartsInPos(x,y int, carts []cart) []int{
+	var is []int
+	for pos, cart := range carts {
+		if (!cart.crashed && cart.pos.x == x && cart.pos.y == y){
+			is = append(is, pos)
 		}
 	}
-	return total
+	return is
 }
 
-func tic() (bool,int,int){
-	sortCarts()
+func tic(carts []cart) []cart {
+	sortCarts(carts)
 	for i := 0; i < len(carts); i++ {
 		carts[i] = advanceCart(carts[i])
-		if (countCartsIn(carts[i].pos.x, carts[i].pos.y) > 1) {
-			return true, carts[i].pos.x, carts[i].pos.y
+		collisions := indexesOfUncollisionedCartsInPos(carts[i].pos.x, carts[i].pos.y, carts)
+		if len(collisions) > 1 { // actual collisions
+			fmt.Println("boom!")
+			for _,j := range collisions {
+				carts[j].crashed = true
+			}
 		}
 	}
-	return false,-1,-1
+	var newCarts []cart
+	for _,cart := range carts {
+		if !cart.crashed {
+			newCarts = append(newCarts, cart)
+		}
+	}
+	return newCarts
 }
 
 func main(){
-	readRoads()
+	carts := readRoads()
 	for true {
-		col, x, y := tic()
-		if col {
-			fmt.Printf("%d,%d\n",x,y)
+		carts := tic(carts)
+		if len(carts) == 1 {
+			fmt.Printf("%d,%d\n",carts[0].pos.x,carts[0].pos.y)
 			break
 		}
 	}
