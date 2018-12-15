@@ -187,11 +187,15 @@ func tic(carts []cart) []cart {
 
 func main(){
 	carts := readRoads()
+	loops := 0
 	for true {
 		carts := tic(carts)
 		if len(carts) == 1 {
 			fmt.Printf("%d,%d\n",carts[0].pos.x,carts[0].pos.y)
 			break
 		}
+		loops++
 	}
+	fmt.Printf("%d cycles\n",loops)
+
 }
