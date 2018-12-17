@@ -180,20 +180,23 @@ func pickMove(c *character) (bool, position){
 	}
 	var minDirection position
 	var minDistance = int64(verybig)
+	var minTarget position
+
 	ns := getNeighbors(c.p)
+
 	for _, p := range []position{ns.up,ns.left,ns.right,ns.down} {
 		if paths.Edge(posToId(c.p),posToId(p)) {
 			_, distances := graph.ShortestPaths(paths, posToId(p))
 			for i := 0; i < len(distances); i++ {
 				if enemyRanges[idToPos(i)] {
-					if distances[i] != -1 && (distances[i] < minDistance || (distances[1] == minDistance && (isBefore(p, minDirection)))){
+					if distances[i] != -1 && (distances[i] < minDistance || (distances[i] == minDistance && (isBefore(idToPos(i), minTarget)))){
 						minDistance = distances[i]
 						minDirection = p
+						minTarget = idToPos(i)
 					}
 				}
 			}
 		}
-
 	}
 	if minDistance != int64(verybig) {
 		return true, minDirection
@@ -224,7 +227,6 @@ func act(c *character) {
 }
 
 func move(c *character, np position) {
-	fmt.Printf("   MOVE %d from (%d,%d) to (%d,%d)\n",c.chartype, c.p.x, c.p.y, np.x, np.y)
 	addEntriesTo(c.p)
 	delete(cinPosition, c.p)
 	c.p = np
@@ -233,7 +235,6 @@ func move(c *character, np position) {
 }
 
 func attack(c, t *character){
-	fmt.Printf("   %s ATTACKS %s\n", c, t)
 	t.hitpoints -= c.attackpoints
 	// target died! eeek!
 	if t.hitpoints <= 0 {
@@ -281,7 +282,6 @@ func turn() (bool, int) {
 			act(c)
 			acted++
 			if f,ps := finished(); acted != acs && f{
-				fmt.Printf("FINISHED BEFORE THE END %d %d\n", acted, acs)
 				return true,ps
 			}
 		}
@@ -326,34 +326,20 @@ func readMap () {
 
 func main(){
 	readMap()
-	printMap()
 	prepareCharacters()
 	turns := 0
 	points := 0
 	f := false
 	limit := 1000000000
 	for true {
-		fmt.Printf("Turn %d\n",turns)
 		f,points = turn()
-		printMap()
 		if f || turns == limit {
 			break
 		} else {
 			turns++
 		}
 	}
-	fmt.Println(" *************************************** ")
 	printMap()
-
-	fmt.Println(turns)
-	fmt.Println(points)
+	fmt.Println()
 	fmt.Println(turns * points)
-//	fmt.Printf("%d turns, %d resting hitpoints", turns, points)
-//	printState()
-//	mydebug = true
-//	prepareCharacters()
-//	_, p := pickMove(characters[3])
-//	fmt.Printf("%d,%d\n",p.x, p.y)
-
-
 }
