@@ -198,6 +198,9 @@ func main(){
 		for i := 0; i < 16; i++ {
 			test.inst.opcode = i
 			if !checkTest(test){
+				if originalOpcode == 5 {
+					fmt.Printf("not passed %v\n",test)
+				}
 				eliminatedCodes[originalOpcode][i] = true
 			}
 		}
