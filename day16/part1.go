@@ -45,9 +45,9 @@ func (this test) String() string {
 	return fmt.Sprintf("%v -> %s -> %v",this.before, this.inst, this.after)
 }
 
-var validBefore = regexp.MustCompile(`^Before:\s+\[(\d)+,\s+(\d)+,\s+(\d)+,\s+(\d)+\]$`)
-var validInstruction = regexp.MustCompile(`^(\d)+\s+(\d)+\s+(\d)+\s+(\d)+$`)
-var validAfter = regexp.MustCompile(`^After: +\[(\d)+, +(\d)+, +(\d)+, +(\d)+\]$`)
+var validBefore = regexp.MustCompile(`^Before:\s+\[(\d+),\s+(\d+),\s+(\d+),\s+(\d+)\]$`)
+var validInstruction = regexp.MustCompile(`^(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$`)
+var validAfter = regexp.MustCompile(`^After: +\[(\d+), +(\d+), +(\d+), +(\d+)\]$`)
 
 func exec(reg []int, i inst) {
 	switch i.opcode{
