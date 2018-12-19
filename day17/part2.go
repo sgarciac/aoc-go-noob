@@ -199,7 +199,7 @@ func stall() bool {
 }
 
 func waterCount() int {
-	return len(stalled) + len(flowing)
+	return len(stalled)
 }
 
 func main(){
@@ -209,5 +209,5 @@ func main(){
 		changed = flow() || stall()
 	}
 	printMap("map.gif")
-	fmt.Println(waterCount() - miny)
+	fmt.Println(waterCount())
 }
